@@ -45,18 +45,19 @@ class TenantController extends Controller
                 $message = $validator->errors()->first();
                 return ApiResponse::generalResponse(null, $message, false);
             } else {
-                $company_name = strtolower($request->company_name);
-                $db_name = str_replace(" ", "_", $company_name);
-                $subdomain = str_replace(" ", "", $company_name);
+                $company_name = $request->company_name;
+                $company_name_lower = strtolower($request->company_name);
+                $db_name = str_replace(" ", "_", $company_name_lower);
+                $subdomain = str_replace(" ", "", $company_name_lower);
 
                 $tenant_obj = new Tenant();
 
                 if ($tenant_obj->verifySubdomain($subdomain)) {
-                    return ApiResponse::generalResponse($request->all(), "This company name has been taken", false);
+                    return ApiResponse::generalResponse(null, "The company name [{$company_name}] has already been taken", false);
                 }
 
                 $new_tenant = Tenant::query()->create([
-                    "company_name"  =>  $company_name,
+                    "company_name"  =>  $company_name_lower,
                     "db_name"       =>  $db_name,
                     "subdomain"     =>  $subdomain
                 ]);
