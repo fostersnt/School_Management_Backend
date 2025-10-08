@@ -21,11 +21,4 @@ class Tenant extends Model
         $exists = $this->where('subdomain', $subdomain)->exists();
         return $exists;
     }
-
-    public function createTenantSpecificDatabase($db_name)
-    {
-        $db_host        =   env("DB_HOST", 'N/A');
-        $db_username    =   env('DB_USERNAME', 'N/A');
-        $db_password    =   env("DB_PASSWORD");
-    }
 }

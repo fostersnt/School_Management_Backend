@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenants;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\DatabaseService;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
@@ -39,22 +40,40 @@ class TenantController extends Controller
             // ]
         ]);
 
-        $db_name = str_replace(" ", "_", $request->company_name);
-        $subdomain = str_replace(" ", "", $request->company_name);
-        $db_host = env("DB_HOST", 'NA');
-        
-        $tenant = new Tenant();
+        try {
+            if ($validator->fails()) {
+                $message = $validator->errors()->first();
+                return ApiResponse::generalResponse(null, $message, false);
+            } else {
+                $db_name = str_replace(" ", "_", $request->company_name);
+                $subdomain = str_replace(" ", "", $request->company_name);
 
-        if ($tenant->verifySubdomain($subdomain)) {
-            return ApiResponse::generalResponse($request->all(), "This company name has been taken", false);
-        }
+                $tenant_obj = new Tenant();
 
+                if ($tenant_obj->verifySubdomain($subdomain)) {
+                    return ApiResponse::generalResponse($request->all(), "This company name has been taken", false);
+                }
 
-        if ($validator->fails()) {
-            $message = $validator->errors()->first();
-            return ApiResponse::generalResponse(null, $message, false);
-        }else {
-            return ApiResponse::generalResponse($request->all(), "In-progress", true);
+                $new_tenant = Tenant::query()->create([
+                    "company_name"  =>  "",
+                    "db_name"       =>  "",
+                    "subdomain"     =>  ""
+                ]);
+
+                $result = DatabaseService::runTenantSpecificMigration($db_name);
+
+                Log::info("MIGRATION RESULT FOR DATABASE [$db_name] === " . json_encode($result));
+
+                if ($result['success'] === true) {
+                    return ApiResponse::generalResponse($new_tenant, "New tenant created", true);
+                } else {
+                    $new_tenant->query()->delete();
+                    return ApiResponse::generalResponse(null, "Unable to create new tenant", true);
+                }
+            }
+        } catch (\Throwable $th) {
+            Log::info("MIGRATION ERROR FOR DATABASE [$db_name] === " . $th->getMessage());
+            return ApiResponse::generalResponse(null, "Unable to create new tenant", true);
         }
     }
 }
