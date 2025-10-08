@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,25 +30,27 @@ class TenantIdentification
         Log::info("TENANT === " . json_encode($tenant));
 
         if (!$tenant) {
+            // return response('Tenant not found', 404);
             abort(404, 'Tenant not found');
-        Log::info("TENANT NOT FOUND === " . json_encode($tenant));
         }
 
-        $this->switchDatabaseConnection($tenant);
+        $connection_status = $this->switchDatabaseConnection($tenant);
 
-        Log::info("TENANT SWITCHED === " . json_encode($tenant));
-
-        return $next($request);
+        if ($connection_status === true) {
+            return $next($request);
+        } else {
+            abort(401);
+        }
     }
 
     private function getSubdomainFromHost($host)
     {
         $hostParts = explode('.', $host);
-        
+
         if (count($hostParts) > 2) {
             return $hostParts[0];
         }
-        
+
         return null;
     }
 
@@ -60,5 +63,17 @@ class TenantIdentification
             'username' => $tenant->db_username,
             'password' => $tenant->db_password,
         ]);
+
+        try {
+            DB::connection('tenant')->getPdo();
+
+            Log::info("Successfully connected to tenant database for: " . $tenant->subdomain);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Database connection failed for tenant: " . $tenant->subdomain . " - " . $e->getMessage());
+
+            return false;
+        }
     }
 }
