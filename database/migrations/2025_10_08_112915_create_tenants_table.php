@@ -10,10 +10,8 @@ return new class extends Migration
     {
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();
-            $table->string('db_host');
+            $table->string('company_name');
             $table->string('db_name');
-            $table->string('db_username');
-            $table->string('db_password');
             $table->string('subdomain');
             $table->softDeletes();
             $table->timestamps();

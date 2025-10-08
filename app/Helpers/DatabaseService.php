@@ -17,6 +17,7 @@ class DatabaseService
             if ($status_2['success'] === true) {
                 Artisan::call('migrate', [
                     '--database' => 'tenant',
+                    '--path'        =>  'database/migrations/Tenants',
                     '--force' => true,
                 ]);
             } else {
