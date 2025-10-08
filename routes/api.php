@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::controller(TenantController::class)->group(function(){
-    Route::get('/tenants', 'index');
+Route::controller(TenantController::class)->prefix('tenants')->group(function(){
+    Route::get('/', 'index');
+    Route::post('/create', 'create');
 });

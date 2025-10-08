@@ -5,25 +5,36 @@ namespace App\Helpers;
 use Illuminate\Http\JsonResponse;
 
 class General {
-    public static function successRequestResponse($data = [], $message = 'N/A'): JsonResponse
+    public static function generalResponse($data, $message, $is_success): JsonResponse
     {
+        $status = $is_success === true ? 'success' : 'failed';
+
         $resp_data = [
-            "request_status"    => "success",
+            "request_status"    => $status,
             "message"           => $message,
-            "data"              => $data ?? []
+            "data"              => $data
         ];
 
         return response()->json($resp_data, 200);
     }
 
-    public static function failedRequestResponse($data = [], $message = 'N/A'): JsonResponse
+    public static function badRequestResponse($message): JsonResponse
     {
         $resp_data = [
             "request_status"    => "failed",
             "message"           => $message,
-            "data"              => $data ?? []
         ];
 
-        return response()->json($resp_data, 200);
+        return response()->json($resp_data, 400);
+    }
+
+    public static function unauthorizedRequestResponse(): JsonResponse
+    {
+        $resp_data = [
+            "request_status"    => "failed",
+            "message"           => "Unauthorized",
+        ];
+
+        return response()->json($resp_data, 401);
     }
 }
