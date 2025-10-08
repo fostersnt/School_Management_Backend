@@ -67,7 +67,9 @@ class TenantController extends Controller
                 if ($result['success'] === true) {
                     return ApiResponse::generalResponse($new_tenant, "New tenant created", true);
                 } else {
-                    $new_tenant->query()->delete();
+                    if ($new_tenant) {
+                        $new_tenant->query()->delete();
+                    }
                     return ApiResponse::generalResponse(null, "Unable to create new tenant", true);
                 }
             }
