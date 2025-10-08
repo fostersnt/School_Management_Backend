@@ -17,7 +17,7 @@ class VerifyContentType
     public function handle(Request $request, Closure $next): Response
     {
         if (!$request->isJson()) {
-            return General::failedRequestResponse([], 'Invalid Content-Type. Only JSON requests are accepted.');
+            return General::badRequestResponse("Invalid Content-Type. Only JSON requests are accepted");
         }
 
         return $next($request);
