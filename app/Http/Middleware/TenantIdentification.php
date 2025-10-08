@@ -71,7 +71,7 @@ class TenantIdentification
 
             return true;
         } catch (\Exception $e) {
-            Log::error("Database connection failed for tenant: " . $tenant->subdomain . " - " . $e->getMessage());
+            Log::error("Database connection failed for tenant: " . json_encode($tenant) . " - " . $e->getMessage());
 
             return false;
         }
