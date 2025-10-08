@@ -28,21 +28,19 @@ class MigrateTenant extends Command
      */
     public function handle()
     {
-        // Get the tenant ID from the argument
         $tenantId = $this->argument('tenantId');
 
-        // Find the tenant by ID (or any other identifier you use)
         $tenant = Tenant::find($tenantId);
 
         if (!$tenant) {
             $this->error("Tenant not found.");
-            return;
+            exit();
         }
 
-        // Set the database connection for this tenant
+        $this->checkAndCreateDatabase($tenant);
+
         $this->switchDatabaseConnection($tenant);
 
-        // Run migrations for this tenant's database
         $this->info("Running migrations for tenant: {$tenant->subdomain}");
 
         $this->call('migrate', [
@@ -67,6 +65,26 @@ class MigrateTenant extends Command
         } catch (\Exception $e) {
             $this->error("Database connection failed for tenant: {$tenant->subdomain} - " . $e->getMessage());
             exit;
+        }
+    }
+
+    private function checkAndCreateDatabase($tenant)
+    {
+        try {
+            $connection = DB::connection('mysql');
+
+            $databaseExists = $connection->select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$tenant->db_name]);
+
+            if (empty($databaseExists)) {
+                $this->warn("Database for tenant {$tenant->subdomain} does not exist. Creating...");
+
+                $connection->statement("CREATE DATABASE IF NOT EXISTS `{$tenant->db_name}`");
+
+                $this->info("Database for tenant {$tenant->subdomain} created.");
+            }
+        } catch (\Exception $e) {
+            $this->error("Error checking/creating database: " . $e->getMessage());
+            exit();
         }
     }
 }
