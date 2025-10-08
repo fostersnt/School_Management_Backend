@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('db_name');
             $table->string('db_username');
             $table->string('db_password');
+            $table->string('subdomain');
             $table->softDeletes();
             $table->timestamps();
         });
