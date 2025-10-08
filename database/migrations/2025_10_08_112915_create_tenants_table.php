@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();
-            $table->string('host');
+            $table->string('db_host');
             $table->string('db_name');
             $table->string('db_username');
             $table->string('db_password');
