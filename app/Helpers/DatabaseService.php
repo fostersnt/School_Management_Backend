@@ -14,21 +14,18 @@ class DatabaseService
         $status_1 = self::checkAndCreateDatabase($db_name);
         if ($status_1['success'] === true) {
             $status_2 = self::changeDbConnection($db_name);
-            if ($status_2['success'] === true) {
-                Artisan::call('migrate', [
-                    '--database' => 'tenant',
-                    '--path'        =>  'database/migrations/Tenants',
-                    '--force' => true,
-                ]);
-            } else {
-                return $status_2;
-            }
+            Artisan::call('migrate', [
+                '--database' => 'tenant',
+                '--path'        =>  'database/migrations/Tenants',
+                '--force' => true,
+            ]);
+            return $status_2;
         } else {
             return $status_1;
         }
     }
 
-    private static function changeDbConnection($db_name)
+    public static function changeDbConnection($db_name)
     {
         $db_host        =   env("DB_HOST", 'N/A');
         $db_username    =   env('DB_USERNAME', 'N/A');
@@ -56,7 +53,7 @@ class DatabaseService
         }
     }
 
-    private static function checkAndCreateDatabase($db_name)
+    public static function checkAndCreateDatabase($db_name)
     {
         try {
             $connection = DB::connection('mysql');

@@ -45,8 +45,9 @@ class TenantController extends Controller
                 $message = $validator->errors()->first();
                 return ApiResponse::generalResponse(null, $message, false);
             } else {
-                $db_name = str_replace(" ", "_", $request->company_name);
-                $subdomain = str_replace(" ", "", $request->company_name);
+                $company_name = strtolower($request->company_name);
+                $db_name = str_replace(" ", "_", $company_name);
+                $subdomain = str_replace(" ", "", $company_name);
 
                 $tenant_obj = new Tenant();
 
@@ -55,9 +56,9 @@ class TenantController extends Controller
                 }
 
                 $new_tenant = Tenant::query()->create([
-                    "company_name"  =>  "",
-                    "db_name"       =>  "",
-                    "subdomain"     =>  ""
+                    "company_name"  =>  $company_name,
+                    "db_name"       =>  $db_name,
+                    "subdomain"     =>  $subdomain
                 ]);
 
                 $result = DatabaseService::runTenantSpecificMigration($db_name);
@@ -74,7 +75,7 @@ class TenantController extends Controller
                 }
             }
         } catch (\Throwable $th) {
-            Log::info("MIGRATION ERROR FOR DATABASE [$db_name] === " . $th->getMessage());
+            Log::info("MIGRATION ERROR === " . $th->getMessage() . ", LINE === " . $th->getLine());
             return ApiResponse::generalResponse(null, "Unable to create new tenant", true);
         }
     }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\ApiResponse;
+use App\Helpers\DatabaseService;
 use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
@@ -22,7 +24,11 @@ class TenantIdentification
         $subdomain = $this->getSubdomainFromHost($request->getHost());
 
         if (!$subdomain) {
-            abort(404, 'Tenant not found');
+            return response()->json([
+                "success"   =>  false,
+                "message"   => "No subdomain found"
+            ], 404);
+            // abort(404, 'Tenant not found');
         }
 
         $tenant = Tenant::where('subdomain', $subdomain)->first();
@@ -30,16 +36,21 @@ class TenantIdentification
         Log::info("TENANT === " . json_encode($tenant));
 
         if (!$tenant) {
+            return response()->json([
+                "success"   =>  false,
+                "message"   => "No subdomain found"
+            ], 404);
             // return response('Tenant not found', 404);
-            abort(404, 'Tenant not found');
+            // abort(404, 'Tenant not found');
         }
 
-        $connection_status = $this->switchDatabaseConnection($tenant);
+        // $connection_status = $this->switchDatabaseConnection($tenant);
+        $connection_status = DatabaseService::changeDbConnection($tenant->db_name);
 
-        if ($connection_status === true) {
+        if ($connection_status['success'] === true) {
             return $next($request);
         } else {
-            abort(401);
+            return ApiResponse::unauthorizedRequestResponse();
         }
     }
 
