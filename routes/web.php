@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function(){
+    return view('home');
+});
+
 Route::get('/abcd', function () {
     UserMailJob::dispatch('Asante', 'fostersnt@gmail.com');
     return 'success';
