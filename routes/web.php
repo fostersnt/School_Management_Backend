@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileUploadController;
 use App\Jobs\UserMailJob;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +17,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function(){
-    return view('home');
+    $user = User::query()->first();
+
+    return json_encode($user);
+    // return view('home');
 });
 
 Route::get('/abcd', function () {
