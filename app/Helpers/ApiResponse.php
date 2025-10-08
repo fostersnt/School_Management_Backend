@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use Illuminate\Http\JsonResponse;
 
-class General {
+class ApiResponse {
     public static function generalResponse($data, $message, $is_success): JsonResponse
     {
         $status = $is_success === true ? 'success' : 'failed';

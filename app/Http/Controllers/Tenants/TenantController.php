@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Tenants;
 
-use App\Helpers\General;
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
@@ -15,11 +15,11 @@ class TenantController extends Controller
     {
         try {
             $tenants = Tenant::all();
-            return General::generalResponse($tenants, "Tenants data", true);
+            return ApiResponse::generalResponse($tenants, "Tenants data", true);
         } catch (\Throwable $th) {
             $url = $request->getHost();
             Log::info("TENANT RETRIEVAL === [URL === $url] " . $th->getMessage());
-            return General::generalResponse(null, "Error occurred when retrieving tenants data", false);
+            return ApiResponse::generalResponse(null, "Error occurred when retrieving tenants data", false);
         }
     }
 
@@ -31,7 +31,6 @@ class TenantController extends Controller
                 'required',
                 'string',
                 function ($attribute, $value, $fail) {
-                    // Check if the subdomain already exists
                     if (Tenant::where('subdomain', $value)->exists()) {
                         return $fail('This subdomain is already taken.');
                     }
@@ -44,9 +43,9 @@ class TenantController extends Controller
 
         if ($validator->fails()) {
             $message = $validator->errors()->first();
-            return General::generalResponse(null, $message, false);
+            return ApiResponse::generalResponse(null, $message, false);
         }else {
-            return General::generalResponse($request->all(), "In-progress", true);
+            return ApiResponse::generalResponse($request->all(), "In-progress", true);
         }
     }
 }
