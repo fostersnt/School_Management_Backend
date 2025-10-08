@@ -11,10 +11,21 @@ class Tenant extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'db_host',
+        'company_name',
         'db_name',
-        'db_username',
-        'db_password',
         'subdomain'
     ];
+
+    public function verifySubdomain($subdomain)
+    {
+        $exists = $this->where('subdomain', $subdomain)->exists();
+        return $exists;
+    }
+
+    public function createTenantSpecificDatabase($db_name)
+    {
+        $db_host        =   env("DB_HOST", 'N/A');
+        $db_username    =   env('DB_USERNAME', 'N/A');
+        $db_password    =   env("DB_PASSWORD");
+    }
 }

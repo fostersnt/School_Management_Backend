@@ -27,19 +27,28 @@ class TenantController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "company_name"  => 'required|string',
-            "subdomain"     =>  [
-                'required',
-                'string',
-                function ($attribute, $value, $fail) {
-                    if (Tenant::where('subdomain', $value)->exists()) {
-                        return $fail('This subdomain is already taken.');
-                    }
-                }
-            ]
+            // "subdomain"     =>  [
+            //     'required',
+            //     'string',
+            //     function ($attribute, $value, $fail) {
+            //         $new_value = str_replace(" ", "", $value);
+            //         if (Tenant::where('subdomain', $new_value)->exists()) {
+            //             return $fail('This subdomain is already taken.');
+            //         }
+            //     }
+            // ]
         ]);
 
-        $db_host = env("DB_HOST", 'NA');
         $db_name = str_replace(" ", "_", $request->company_name);
+        $subdomain = str_replace(" ", "", $request->company_name);
+        $db_host = env("DB_HOST", 'NA');
+        
+        $tenant = new Tenant();
+
+        if ($tenant->verifySubdomain($subdomain)) {
+            return ApiResponse::generalResponse($request->all(), "This company name has been taken", false);
+        }
+
 
         if ($validator->fails()) {
             $message = $validator->errors()->first();
