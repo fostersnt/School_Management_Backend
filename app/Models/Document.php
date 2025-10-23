@@ -13,6 +13,5 @@ class Document extends Model
     protected $fillable = [
         'type',
         'description',
-        'uploaded_by'
     ];
 }

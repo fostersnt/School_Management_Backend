@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('document_user', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('document_id');
+            $table->bigInteger('user_id');
+            $table->bigInteger('uploaded_by');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
