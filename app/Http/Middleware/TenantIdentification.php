@@ -38,7 +38,7 @@ class TenantIdentification
         if (!$tenant) {
             return response()->json([
                 "success"   =>  false,
-                "message"   => "No subdomain found"
+                "message"   => "No tenant found === $subdomain"
             ], 404);
             // return response('Tenant not found', 404);
             // abort(404, 'Tenant not found');

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Tenants\TenantController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\TenantIdentification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,4 +24,10 @@ use Illuminate\Support\Facades\Route;
 Route::controller(TenantController::class)->prefix('tenants')->group(function(){
     Route::get('/', 'index');
     Route::post('/create', 'create')->withoutMiddleware(TenantIdentification::class);
+});
+
+Route::controller(UserController::class)
+->prefix('users')
+->group(function(){
+    Route::post('/create', 'create');
 });
