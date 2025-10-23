@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,5 +18,10 @@ class UserController extends Controller
             'role_id'           =>  'required|exists:roles,id',
             'profile_picture'   =>  'required|mimes:jpg,png,pdf|max:10240'
         ]);
+
+        if ($validator->fails()) {
+            $message = $validator->errors()->first();
+            return ApiResponse::generalResponse(null, $message, false);
+        }
     }
 }
