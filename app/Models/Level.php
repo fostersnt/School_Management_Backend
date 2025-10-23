@@ -12,6 +12,7 @@ class Level extends Model
 
     protected $fillable = [
         'name',
-        'description'
+        'description',
+        'administrator_id'
     ];
 }
