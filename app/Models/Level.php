@@ -13,6 +13,7 @@ class Level extends Model
     protected $fillable = [
         'name',
         'description',
+        'class_teacher',
         'created_by'
     ];
 }
