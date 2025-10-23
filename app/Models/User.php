@@ -24,11 +24,9 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'role_id',
         'profile_picture',
-        'cv',
-        'certificate',
-        'application_letter',
-        'role_id'
+        'level_id'
     ];
 
     /**
