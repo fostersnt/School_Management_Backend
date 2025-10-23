@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Level extends Model
+class Role extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
-        'description',
-        'administrator_id'
+        'description'
     ];
 }
