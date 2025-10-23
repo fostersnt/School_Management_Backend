@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->bigInteger('role_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });
