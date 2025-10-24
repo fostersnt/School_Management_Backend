@@ -19,8 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function(){
     $user = User::query()->first();
 
-    return json_encode($user);
-    // return view('home');
+    // return json_encode($user);
+    return view('home');
 });
 
 Route::get('/abcd', function () {

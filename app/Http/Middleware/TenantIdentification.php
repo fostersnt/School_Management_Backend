@@ -33,12 +33,12 @@ class TenantIdentification
 
         $tenant = Tenant::where('subdomain', $subdomain)->first();
 
-        Log::info("TENANT === " . json_encode($tenant));
+        // Log::info("TENANT === " . json_encode($tenant));
 
         if (!$tenant) {
             return response()->json([
                 "success"   =>  false,
-                "message"   => "No tenant found === $subdomain"
+                "message"   => "The tenant [$subdomain] cannot be found"
             ], 404);
             // return response('Tenant not found', 404);
             // abort(404, 'Tenant not found');
